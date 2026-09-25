@@ -2,7 +2,11 @@
 FROM eclipse-temurin:25-jdk AS build
 WORKDIR /app
 
-# Prima solo wrapper + pom (mvnw usa Maven 3.9.11 anche senza .mvn/): il layer delle dipendenze resta in cache se cambia solo il codice
+# mvnw scarica Maven con curl: l'immagine JDK non lo include
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Prima solo wrapper + pom: il layer delle dipendenze resta in cache se cambia solo il codice
 COPY mvnw pom.xml ./
 RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && ./mvnw -B -q dependency:go-offline
 
