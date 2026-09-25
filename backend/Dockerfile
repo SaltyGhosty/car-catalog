@@ -2,16 +2,20 @@
 FROM eclipse-temurin:25-jdk AS build
 WORKDIR /app
 
-# mvnw scarica Maven con curl: l'immagine JDK non lo include
+# Maven installato direttamente (piu' affidabile del wrapper dentro Docker)
+ARG MAVEN_VERSION=3.9.11
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${MAVEN_VERSION}/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
+       | tar -xz -C /opt \
+    && ln -s "/opt/apache-maven-${MAVEN_VERSION}/bin/mvn" /usr/local/bin/mvn
 
-# Prima solo wrapper + pom: il layer delle dipendenze resta in cache se cambia solo il codice
-COPY mvnw pom.xml ./
-RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && ./mvnw -B -q dependency:go-offline
+# Prima solo il pom: il layer delle dipendenze resta in cache se cambia solo il codice
+COPY pom.xml ./
+RUN mvn -B -q dependency:go-offline
 
 COPY src src
-RUN ./mvnw -B -q package -DskipTests
+RUN mvn -B -q package -DskipTests
 
 # ---------- Runtime ----------
 FROM eclipse-temurin:25-jre
