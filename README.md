@@ -232,33 +232,6 @@ cd backend
 ### Deploy su Render
 Il file `render.yaml` crea database, backend Docker e frontend statico. Le variabili da impostare su Render sono `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `ALLOWED_ORIGIN` (URL esatto del frontend) e `VITE_API_URL` (URL del backend). `DATABASE_URL` e `JWT_SECRET` vengono generate da Render.
 
----
-
-## 💡 Cosa ho imparato e prossimi passi
-
-### Cosa mi porto a casa
-Questo progetto mi ha insegnato che **scrivere codice che funziona è solo metà del lavoro: l'altra metà è scrivere codice che funziona anche quando le cose vanno storte**. Due richieste nello stesso millisecondo, un server email che non risponde, un utente che modifica a mano il JSON o l'id nell'URL: sono tutti casi che non emergono cliccando sull'interfaccia, ma che fanno la differenza in produzione.
-
-In particolare ho imparato a:
-- ragionare in termini di **transazioni ed eventi**, non solo di "chiamo un metodo";
-- usare il **database come alleato** per la concorrenza (update atomici, vincoli `UNIQUE`) invece di fidarmi solo del codice Java;
-- progettare la **sicurezza fin dall'inizio** e non come ultima patch;
-- **dimostrare** che il codice funziona con i test, invece di sperarlo;
-- rispettare **privacy e licenze** (GDPR, attribuzione delle foto Creative Commons): anche questo fa parte del mestiere.
-
-Il momento più soddisfacente? Vedere passare il test con 4 thread in parallelo che producono **esattamente una** email. 🎉
-
-### Prossimi passi 🔭
-- **Scalabilità del rate limiter**: oggi è in memoria (perfetto con una sola istanza); con più istanze lo sposterei su **Redis**.
-- **Invio email affidabile**: una tabella "outbox" con retry controllati e un provider transazionale (Brevo, SendGrid) al posto di Gmail.
-- **Upload foto** su uno storage (S3 o Cloudinary) oltre a Wikimedia.
-- **Refresh token** in cookie `HttpOnly` al posto del `localStorage`.
-- **Ricerca full-text** con PostgreSQL `tsvector` e ordinamento per rilevanza.
-- **Test end-to-end** del frontend con Playwright e una **pipeline CI** su GitHub Actions.
-
----
-
 <p align="center">
   Realizzato con ☕, tanti test e un pizzico di ostinazione durante il bootcamp <b>Epicode Full Stack Developer</b>.<br/>
-  Se il progetto ti è piaciuto, lascia una ⭐!
 </p>
