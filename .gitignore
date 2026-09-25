@@ -12,3 +12,9 @@ frontend/.env.local
 .env
 *.env
 *.log
+
+# Script locali
+fix-deploy.bat
+pubblica-github.bat
+.run/Fix deploy Render.run.xml
+.run/Pubblica su GitHub.run.xml
