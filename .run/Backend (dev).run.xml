@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Backend (dev)" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="it.carcatalog.CarCatalogApplication" />
+    <module name="car-catalog-backend" />
+    <envs>
+      <env name="SPRING_PROFILES_ACTIVE" value="dev" />
+    </envs>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,0 +1,20 @@
+# Profilo dei test di integrazione: H2 in memoria (modalità PostgreSQL), schema creato da Hibernate.
+DATABASE_URL: jdbc:h2:mem:carcatalog;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
+
+spring:
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+app:
+  allowed-origin: http://localhost:5173
+  jwt:
+    secret: test-secret-per-integrazione-0123456789-abcdef
+  admin:
+    email: admin@test.local
+    password: admin-test-password-123
+  login:
+    max-tentativi: 3
+    cooldown: PT2S   # nei test il blocco dura 2 secondi invece di 1 minuto

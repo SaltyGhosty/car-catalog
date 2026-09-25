@@ -1,0 +1,29 @@
+#!/bin/sh
+# ----------------------------------------------------------------------------
+# Maven Wrapper (only-script): scarica la versione di Maven indicata in
+# .mvn/wrapper/maven-wrapper.properties (se manca) e la esegue.
+# ----------------------------------------------------------------------------
+set -e
+BASEDIR=$(cd "$(dirname "$0")" && pwd)
+PROPS="$BASEDIR/.mvn/wrapper/maven-wrapper.properties"
+DIST_URL=$(grep '^distributionUrl=' "$PROPS" | cut -d= -f2- | tr -d '\r')
+DIST_NAME=$(basename "$DIST_URL" .zip)
+MVN_HOME="${MAVEN_USER_HOME:-$HOME/.m2}/wrapper/dists/$DIST_NAME"
+
+if [ ! -x "$MVN_HOME/bin/mvn" ]; then
+  TGZ_URL=$(echo "$DIST_URL" | sed 's/-bin\.zip$/-bin.tar.gz/')
+  echo "[mvnw] Scarico $TGZ_URL"
+  TMP=$(mktemp -d)
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL -o "$TMP/maven.tar.gz" "$TGZ_URL"
+  else
+    wget -q -O "$TMP/maven.tar.gz" "$TGZ_URL"
+  fi
+  tar -xzf "$TMP/maven.tar.gz" -C "$TMP"
+  mkdir -p "$(dirname "$MVN_HOME")"
+  mv "$TMP"/apache-maven-* "$MVN_HOME"
+  rm -rf "$TMP"
+fi
+
+export MAVEN_PROJECTBASEDIR="$BASEDIR"
+exec "$MVN_HOME/bin/mvn" "$@"

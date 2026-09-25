@@ -1,0 +1,14 @@
+# Solo per sviluppo locale: avvia PostgreSQL con `docker compose up -d`
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: carcatalog
+      POSTGRES_USER: carcatalog
+      POSTGRES_PASSWORD: carcatalog
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

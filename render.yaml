@@ -1,0 +1,63 @@
+# Blueprint Render: Dashboard → New → Blueprint → seleziona il repository.
+# Le variabili con "sync: false" vanno inserite a mano (Render le chiede alla prima creazione).
+databases:
+  - name: car-catalog-db
+    plan: free
+    region: frankfurt
+    databaseName: carcatalog
+    user: carcatalog
+
+services:
+  # ---------- Backend Spring Boot (Docker) ----------
+  - type: web
+    name: car-catalog-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: car-catalog-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true          # 256 bit casuali generati da Render
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: MAIL_USERNAME
+        sync: false                  # es. tuoaccount@gmail.com
+      - key: MAIL_PASSWORD
+        sync: false                  # App Password di Gmail (16 caratteri), MAI nel codice
+      - key: ALLOWED_ORIGIN
+        sync: false                  # URL ESATTO del frontend, es. https://car-catalog-web.onrender.com
+
+  # ---------- Frontend React (sito statico) ----------
+  - type: web
+    name: car-catalog-web
+    runtime: static
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: ./frontend/dist
+    routes:
+      - type: rewrite               # SPA: tutte le rotte servono index.html
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: no-referrer
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://upload.wikimedia.org; connect-src 'self' https://*.onrender.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    envVars:
+      - key: VITE_API_URL
+        sync: false                  # URL del backend, es. https://car-catalog-api.onrender.com

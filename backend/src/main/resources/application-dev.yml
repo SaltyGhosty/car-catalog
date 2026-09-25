@@ -1,0 +1,11 @@
+# Profilo "dev" per lavorare in locale (IntelliJ → run configuration "Backend (dev)").
+# Valori SOLO per sviluppo: in produzione arrivano dalle env di Render.
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-secret-change-me-0123456789-abcdefghij}
+  admin:
+    password: ${ADMIN_PASSWORD:admin-dev-password}
+
+logging:
+  level:
+    it.carcatalog: DEBUG

@@ -1,0 +1,74 @@
+# Configurazione di produzione (Render). Nessun segreto qui: tutto arriva da variabili d'ambiente.
+spring:
+  application:
+    name: car-catalog
+  config:
+    # In locale le variabili (MAIL_USERNAME, MAIL_PASSWORD, ...) si possono mettere in backend/.env
+    # (mai committato). Su Render il file non esiste: si usano le Environment Variables del servizio.
+    import: optional:file:.env[.properties]
+  # DataSource: vedi it.carcatalog.config.DatabaseUrl (legge DATABASE_URL)
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate          # lo schema lo gestisce Flyway (db/migration)
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}   # SOLO da variabile d'ambiente (App Password di Gmail)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework   # Render termina TLS davanti all'app
+  error:
+    include-message: never
+    include-stacktrace: never
+
+app:
+  allowed-origin: ${ALLOWED_ORIGIN:http://localhost:5173}
+  jwt:
+    secret: ${JWT_SECRET}
+    validita: PT2H
+  login:
+    max-tentativi: 3
+    cooldown: PT1M       # blocco di 1 minuto dopo 3 password sbagliate
+  wikimedia:
+    # Policy Wikimedia: User-Agent con nome app e contatto
+    user-agent: ${WIKIMEDIA_USER_AGENT:CarCatalog/1.0 (progetto didattico; contatto nel README)}
+  admin:
+    email: ${ADMIN_EMAIL:admin@carcatalog.local}
+    password: ${ADMIN_PASSWORD:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+  health:
+    mail:
+      enabled: false   # se Gmail è giù l'app resta "UP" (Render non la riavvia a vuoto)
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN   # mai loggare i parametri bindati (email, hash...)

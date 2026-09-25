@@ -1,0 +1,14 @@
+# Backend
+backend/target/
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+# IDE
+.idea/workspace.xml
+.idea/shelf/
+*.iml
+# Segreti
+.env
+*.env
+*.log
